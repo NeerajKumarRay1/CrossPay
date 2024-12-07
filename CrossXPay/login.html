@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CrossPay</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h2 class="text-3xl font-bold text-center mb-6">Login to CrossPay</h2>
+        
+        <form id="login-form">
+            <!-- Wallet ID Field -->
+            <div class="mb-4">
+                <label for="walletId" class="block text-gray-700">Wallet ID</label>
+                <input type="text" id="walletId" class="w-full p-2 border rounded mt-2" required>
+            </div>
+
+            <!-- Password Field -->
+            <div class="mb-4">
+                <label for="password" class="block text-gray-700">Password</label>
+                <input type="password" id="password" class="w-full p-2 border rounded mt-2" required>
+            </div>
+
+            <button type="submit" class="w-full p-2 bg-blue-600 text-white rounded-full">Login</button>
+        </form>
+
+        <div class="text-center mt-4">
+            <p class="text-sm">Don't have an account? <a href="signup.html" class="text-blue-600">Sign Up</a></p>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const walletId = document.getElementById('walletId').value;
+            const password = document.getElementById('password').value;
+
+            const storedWalletId = localStorage.getItem('walletId');
+            const storedPassword = localStorage.getItem('password');
+
+            if (walletId === storedWalletId && password === storedPassword) {
+                localStorage.setItem('loggedIn', 'true');
+                window.location.href = 'homepage.html';  // Redirect to Profile page after successful login
+            } else {
+                alert('Invalid credentials');
+            }
+        });
+    </script>
+</body>
+</html>

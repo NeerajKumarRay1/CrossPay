@@ -1,0 +1,437 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Crosspay Send
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.1/dist/web3.min.js">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <script>
+   let web3;
+        let userAccount;
+
+        // Initialize Web3
+        if (typeof window.ethereum !== 'undefined') {
+            web3 = new Web3(window.ethereum);
+            console.log("MetaMask is installed.");
+        } else {
+            alert("Please install MetaMask!");
+        }
+
+        // Request MetaMask account
+        async function connectWallet() {
+            try {
+                const accounts = await web3.eth.requestAccounts();
+                userAccount = accounts[0];
+                console.log("Connected account:", userAccount);
+                updateBalance();  // Update the balance after wallet connection
+            } catch (error) {
+                console.error("MetaMask connection failed:", error);
+            }
+        }
+
+        // Validate Ethereum address
+        function isValidAddress(address) {
+            return web3.utils.isAddress(address);
+        }
+
+        // Send money
+        async function sendMoney(event) {
+            event.preventDefault();
+            const recipient = document.getElementById("recipient-wallet").value;
+            const amount = document.getElementById("amount").value;
+
+            if (!isValidAddress(recipient)) {
+                alert("Invalid wallet address!");
+                return;
+            }
+
+            if (!amount || isNaN(amount) || amount <= 0) {
+                alert("Invalid amount!");
+                return;
+            }
+
+            try {
+                document.getElementById("statusMessage").textContent = "Transaction in progress...";
+                const tx = await web3.eth.sendTransaction({
+                    from: userAccount,
+                    to: recipient,
+                    value: web3.utils.toWei(amount, "ether"),
+                });
+                document.getElementById("statusMessage").textContent = `Transaction successful! Hash: ${tx.transactionHash}`;
+                console.log(tx);
+            } catch (error) {
+                console.error("Transaction failed:", error);
+                document.getElementById("statusMessage").textContent = "Transaction failed. Please try again.";
+            }
+        }
+
+        // Fetch balance
+        async function updateBalance() {
+            if (!userAccount) return;
+            const balanceWei = await web3.eth.getBalance(userAccount);
+            const balanceEth = web3.utils.fromWei(balanceWei, "ether");
+            document.getElementById("balanceDisplay").innerHTML = `<span class="text-black-600 text-2xl">${balanceEth} ETH</span>`;
+        }
+
+        // Show receive modal
+        function showReceiveModal() {
+            if (!userAccount) {
+                alert("Please connect your wallet first.");
+                return;
+            }
+            document.getElementById("receiveModal").classList.remove("hidden");
+            document.getElementById("walletAddress").textContent = userAccount;
+        }
+
+        // Hide receive modal
+        function hideReceiveModal() {
+            document.getElementById("receiveModal").classList.add("hidden");
+        }
+
+        // On page load, connect to wallet
+        window.onload = connectWallet;
+  </script>
+  <style>
+   .fade-out {
+            animation: fadeOut 0.5s forwards;
+        }
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+            }
+        }
+  </style>
+ </head>
+ <body class="font-roboto bg-gray-100">
+  <div class="container mx-auto p-4" id="app">
+   <header class="flex justify-between items-center mb-8">
+    <div class="flex items-center">
+     <i class="fas fa-wallet text-blue-600 text-3xl mr-2">
+     </i>
+     <div>
+      <p class="text-lg font-bold text-black">
+       Wallet Balance
+      </p>
+      <p class="text-green-600 text-lg font-bold flex items-center">
+       $567.89
+       <span class="ml-2 text-red-500">
+        🔥
+       </span>
+       <span class="ml-1 text-gray-600">
+        10
+       </span>
+      </p>
+     </div>
+    </div>
+    <h1 class="text-4xl font-bold text-blue-600 text-center">
+     Crosspay
+    </h1>
+   </header>
+   <div class="flex flex-col md:flex-row">
+    <!-- Friends List -->
+    <aside class="w-full md:w-1/4 bg-white p-4 rounded-lg shadow-lg mb-4 md:mb-0 md:mr-4">
+     <div class="mb-4">
+      <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="search-friends" placeholder="Search Friends" type="text"/>
+     </div>
+     <div class="overflow-y-auto h-96 mb-4">
+      <ul>
+       <li class="mb-2 flex items-center">
+        <img alt="Profile picture of friend 1" class="rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/ty9S91KkBFb3HRF9BzhZUBjHoigFueaNIpw3UIirXpYp2K8JA.jpg" width="40"/>
+        <span class="flex items-center">
+         Friend 1
+         <span class="ml-2 text-red-500">
+          🔥
+         </span>
+         <span class="ml-1 text-gray-600">
+          5
+         </span>
+        </span>
+       </li>
+       <li class="mb-2 flex items-center">
+        <img alt="Profile picture of friend 2" class="rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/1PGs4Veq8R0qDakeY4UPLbmwBXvBQINkHtPJvjo0e2HparwnA.jpg" width="40"/>
+        <span class="flex items-center">
+         Friend 2
+         <span class="ml-2 text-red-500">
+          🔥
+         </span>
+         <span class="ml-1 text-gray-600">
+          3
+         </span>
+        </span>
+       </li>
+       <li class="mb-2 flex items-center">
+        <img alt="Profile picture of friend 3" class="rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/o3t6gizONEYmOxf9UkEq7OgE1HXPuvQKPxfZemnirbSmarwnA.jpg" width="40"/>
+        <span class="flex items-center">
+         Friend 3
+         <span class="ml-2 text-red-500">
+          🔥
+         </span>
+         <span class="ml-1 text-gray-600">
+          7
+         </span>
+        </span>
+       </li>
+       <li class="mb-2 flex items-center">
+        <img alt="Profile picture of friend 4" class="rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/mzyywOzniXIOAdg418fRLFEnYKTYMjcC2ydNoRLcjqzr2K8JA.jpg" width="40"/>
+        <span class="flex items-center">
+         Friend 4
+         <span class="ml-2 text-red-500">
+          🔥
+         </span>
+         <span class="ml-1 text-gray-600">
+          2
+         </span>
+        </span>
+       </li>
+       <li class="mb-2 flex items-center">
+        <img alt="Profile picture of friend 5" class="rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/IslRMgvhLLrDCR3ymefymNbNWjrHHO4KmuFrCpvGdvLPtV4TA.jpg" width="40"/>
+        <span class="flex items-center">
+         Friend 5
+         <span class="ml-2 text-red-500">
+          🔥
+         </span>
+         <span class="ml-1 text-gray-600">
+          4
+         </span>
+        </span>
+       </li>
+       <li class="mb-2 flex items-center">
+        <img alt="Profile picture of friend 6" class="rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/OGWDgCBP0G7PFR2TONMPRVYYMxIQTHJvA9ffEMpl7RFWtV4TA.jpg" width="40"/>
+        <span class="flex items-center">
+         Friend 6
+         <span class="ml-2 text-red-500">
+          🔥
+         </span>
+         <span class="ml-1 text-gray-600">
+          6
+         </span>
+        </span>
+       </li>
+       <li class="mb-2 flex items-center">
+        <img alt="Profile picture of friend 7" class="rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/e5cKylgLF40jMaE6QD36ZjjqeiMAj3K4CwFF0NoPYMnMtV4TA.jpg" width="40"/>
+        <span class="flex items-center">
+         Friend 7
+         <span class="ml-2 text-red-500">
+          🔥
+         </span>
+         <span class="ml-1 text-gray-600">
+          1
+         </span>
+        </span>
+       </li>
+       <li class="mb-2 flex items-center">
+        <img alt="Profile picture of friend 8" class="rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/jbtxoKR5brJWOx8UHNJoFv1u8zWV9mMwJJ4v8gzNTJTSbFeJA.jpg" width="40"/>
+        <span class="flex items-center">
+         Friend 8
+         <span class="ml-2 text-red-500">
+          🔥
+         </span>
+         <span class="ml-1 text-gray-600">
+          8
+         </span>
+        </span>
+       </li>
+       <li class="mb-2 flex items-center">
+        <img alt="Profile picture of friend 9" class="rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/00xxM8fZktW8ekkF7ttK3oMo932a78ytxOWBNELl6OcVtV4TA.jpg" width="40"/>
+        <span class="flex items-center">
+         Friend 9
+         <span class="ml-2 text-red-500">
+          🔥
+         </span>
+         <span class="ml-1 text-gray-600">
+          9
+         </span>
+        </span>
+       </li>
+       <li class="mb-2 flex items-center">
+        <img alt="Profile picture of friend 10" class="rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/CxsDRSY8YXacMB0srdLeegXAygGhzpR4aFeW2Moajx4garwnA.jpg" width="40"/>
+        <span class="flex items-center">
+         Friend 10
+         <span class="ml-2 text-red-500">
+          🔥
+         </span>
+         <span class="ml-1 text-gray-600">
+          10
+         </span>
+        </span>
+       </li>
+      </ul>
+     </div>
+     <!-- Add New Friend Section -->
+     <div class="bg-blue-100 p-4 rounded-lg shadow-lg mt-8">
+      <h3 class="text-xl font-bold mb-4 text-blue-600">
+       Add New Friend
+      </h3>
+      <div class="mb-4">
+       <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="wallet-id" placeholder="Enter Wallet ID" type="text"/>
+      </div>
+      <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">
+       <i class="fas fa-user-plus">
+       </i>
+       Add Friend
+      </button>
+     </div>
+    </aside>
+    <!-- Main Content -->
+    <main class="w-full md:w-3/4 bg-white p-4 rounded-lg shadow-lg">
+     <div class="text-center mb-8">
+      <img alt="Profile picture of the user" class="rounded-full mx-auto mb-4" height="100" src="https://storage.googleapis.com/a1aa/image/WaI8OAQ1YezxXCtsUHH253IkhBl16ieoGdHdlpHrfDpdarwnA.jpg" width="100"/>
+      <h2 class="text-2xl font-bold text-black">
+       User Name
+      </h2>
+     </div>
+     <div class="text-center mb-8">
+      <p class="text-4xl font-bold text-black">
+      </p>
+      <div class="text-center mt-8">
+       <p class="text-sm font-bold text-gray-700" id="balanceDisplay">
+        <span class="text-green-600 text-2xl">
+         -- ETH
+        </span>
+       </p>
+      </div>
+      <p class="text-gray-600">
+       Account Balance
+      </p>
+     </div>
+     <div class="flex justify-center space-x-4 mb-8">
+      <a class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transition-opacity duration-500 ease-in-out" href="patanhi.html">
+       <i class="fas fa-money-bill-wave">
+       </i>
+       Send
+      </a>
+      <button class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline" id="receiveButton" onclick="window.location.href='recieve.html'">
+       <i class="fas fa-wallet">
+       </i>
+       Receive
+      </button>
+      <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">
+       <i class="fas fa-exchange-alt">
+       </i>
+       Swap
+      </button>
+      <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline" onclick="window.location.href='about.html'">
+       <i class="fas fa-info-circle">
+       </i>
+       About
+      </button>
+     </div>
+     <div>
+      <h3 class="text-xl font-bold mb-4 text-black">
+       Recent Transactions
+      </h3>
+      <div class="overflow-y-auto h-64">
+       <ul>
+        <li class="mb-2 flex justify-between text-black">
+         <div>
+          <span class="block font-bold">
+           Transaction 1
+          </span>
+          <span class="text-gray-600">
+           ID: 1234567890
+          </span>
+         </div>
+         <span>
+          - $50.00
+         </span>
+        </li>
+        <li class="mb-2 flex justify-between text-black">
+         <div>
+          <span class="block font-bold">
+           Transaction 2
+          </span>
+          <span class="text-gray-600">
+           ID: 0987654321
+          </span>
+         </div>
+         <span>
+          - $20.00
+         </span>
+        </li>
+        <li class="mb-2 flex justify-between text-black">
+         <div>
+          <span class="block font-bold">
+           Transaction 3
+          </span>
+          <span class="text-gray-600">
+           ID: 1122334455
+          </span>
+         </div>
+         <span>
+          - $100.00
+         </span>
+        </li>
+        <li class="mb-2 flex justify-between text-black">
+         <div>
+          <span class="block font-bold">
+           Transaction 4
+          </span>
+          <span class="text-gray-600">
+           ID: 5566778899
+          </span>
+         </div>
+         <span>
+          - $75.00
+         </span>
+        </li>
+        <li class="mb-2 flex justify-between text-black">
+         <div>
+          <span class="block font-bold">
+           Transaction 5
+          </span>
+          <span class="text-gray-600">
+           ID: 6677889900
+          </span>
+         </div>
+         <span>
+          - $30.00
+         </span>
+        </li>
+        <li class="mb-2 flex justify-between text-black">
+         <div>
+          <span class="block font-bold">
+           Transaction 6
+          </span>
+          <span class="text-gray-600">
+           ID: 9988776655
+          </span>
+         </div>
+         <span>
+          - $200.00
+         </span>
+        </li>
+        <li class="mb-2 flex justify-between text-black">
+         <div>
+          <span class="block font-bold">
+           Transaction 7
+          </span>
+          <span class="text-gray-600">
+           ID: 5544332211
+          </span>
+         </div>
+         <span>
+          - $15.00
+         </span>
+        </li>
+        <li class="mb-2 flex justify-between text-black">
+         <div>
+          <span class="block font-bold">
+           Transaction 8
+          </span>
+          <span class="text-gray-600">
+           ID: 4433221100
+          </span>
+         </div>
+         <span>
+          - $45.00
+         </span>
+        </li>
+        <li class="mb-2 flex justify-between text-black">
+         <div>
+          <span class="block font-bold">

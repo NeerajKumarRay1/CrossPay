@@ -1,0 +1,178 @@
+PROFILE PAGE 
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Crosspay Home</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <style>
+    .fade-out {
+      animation: fadeOut 0.5s forwards;
+    }
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body class="font-roboto bg-gray-100">
+  <div class="container mx-auto p-4" id="app">
+    <header class="flex justify-between items-center mb-8">
+      <div class="flex items-center">
+        <i class="fas fa-wallet text-blue-600 text-3xl mr-2"></i>
+        <div>
+          <p class="text-lg font-bold text-black">Wallet Balance</p>
+          <p id="wallet-balance" class="text-green-600 text-lg font-bold">$0.00</p>
+        </div>
+      </div>
+      <div class="flex justify-center items-center w-full">
+        <h1 class="text-4xl font-extrabold text-blue-600 text-center">Crosspay</h1>
+      </div>
+    </header>
+
+    <div class="flex flex-col md:flex-row">
+      <!-- Friends List -->
+      <aside class="w-full md:w-1/4 bg-white p-4 rounded-lg shadow-lg mb-4 md:mb-0 md:mr-4">
+        <div class="mb-4">
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="search-friends" placeholder="Search Friends" type="text"/>
+        </div>
+        <div class="overflow-y-auto h-96 mb-4" id="friends-list"></div>
+        <div class="bg-blue-100 p-4 rounded-lg shadow-lg mt-8">
+          <h3 class="text-xl font-bold mb-4 text-blue-600">Add New Friend</h3>
+          <div class="mb-4">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="wallet-id" placeholder="Enter Wallet ID" type="text"/>
+          </div>
+          <button id="add-friend-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">
+            <i class="fas fa-user-plus"></i> Add Friend
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="w-full md:w-3/4 bg-white p-4 rounded-lg shadow-lg">
+        <div class="text-center mb-8">
+          <img alt="Profile picture of the user" class="rounded-full mx-auto mb-4" height="100" src="https://storage.googleapis.com/a1aa/image/gZYaP8bPxs47M97vzHOKV3Wq9zMKS3jnfeISqHGf8P99YdwnA.jpg" width="100"/>
+          <h2 id="user-name" class="text-2xl font-bold text-black"></h2>
+          <p id="wallet-id-display" class="text-sm text-gray-600"></p>
+        </div>
+
+        <div class="text-center mb-8">
+          <p id="account-balance" class="text-4xl font-bold text-black">$1,234.56</p>
+          <p class="text-gray-600">Account Balance</p>
+        </div>
+
+        <div class="flex justify-center space-x-4 mb-8">
+          <a class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transition-opacity duration-500 ease-in-out" href="send.html">
+            <i class="fas fa-money-bill-wave"></i> Send
+          </a>
+          <button class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">
+            <i class="fas fa-wallet"></i> Receive
+          </button>
+          <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline">
+            <i class="fas fa-exchange-alt"></i> Swap
+          </button>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-bold mb-4 text-black">Recent Transactions</h3>
+          <div class="overflow-y-auto h-64" id="transaction-list"></div>
+        </div>
+
+        <div class="flex justify-around bg-blue-100 p-4 rounded-lg shadow-lg mt-16">
+          <div class="flex items-center">
+            <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+            <span class="text-black">About</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-file-alt text-blue-600 mr-2"></i>
+            <span class="text-black">Terms</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-phone-alt text-blue-600 mr-2"></i>
+            <span class="text-black">Contact Us</span>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Fetch user data from localStorage
+      const username = localStorage.getItem('username');
+      const walletId = localStorage.getItem('walletId');
+      const balance = parseFloat(localStorage.getItem('balance') || '0.00');
+
+      // Update profile information dynamically
+      document.getElementById('user-name').textContent = username;
+      document.getElementById('wallet-id-display').textContent = Wallet ID: ${walletId};
+      document.getElementById('account-balance').textContent = $${balance.toFixed(2)};
+
+      // Display friends list
+      const friends = [
+        { name: 'Friend 1', transactions: 5, img: 'https://storage.googleapis.com/a1aa/image/UgSyeFCeuXvmHEu5CWxKK1OFewIVzeiUgAekCGZNr1Q9i1BfE.jpg' },
+        { name: 'Friend 2', transactions: 3, img: 'https://storage.googleapis.com/a1aa/image/eKfuY52KoPunVk20BaTUzsVf4DOsR5oK76oHWcRP9xsEZdwnA.jpg' },
+        { name: 'Friend 3', transactions: 7, img: 'https://storage.googleapis.com/a1aa/image/hoK6PVidxRKpCFWRmXf2GapkIuPNGkkGNeF34GDlch9fYdwnA.jpg' },
+      ];
+
+      const friendsListElement = document.getElementById('friends-list');
+      friends.forEach(friend => {
+        const friendElement = document.createElement('li');
+        friendElement.classList.add('mb-2', 'flex', 'items-center');
+        friendElement.innerHTML = `
+          <img alt="Profile picture of ${friend.name}" class="rounded-full mr-2" height="40" src="${friend.img}" width="40"/>
+          <span class="flex items-center">
+           ${friend.name}
+           <span class="ml-2 text-red-500">🔥</span>
+           <span class="ml-2 text-gray-500 text-xs">(${friend.transactions} transactions)</span>
+          </span>
+        `;
+        friendsListElement.appendChild(friendElement);
+      });
+
+      // Display recent transactions
+      const transactionHistory = [
+        { id: '1234567890', amount: -50, description: 'Transaction 1' },
+        { id: '0987654321', amount: -20, description: 'Transaction 2' },
+        { id: '1122334455', amount: -100, description: 'Transaction 3' },
+      ];
+
+      const transactionListElement = document.getElementById('transaction-list');
+      transactionHistory.forEach(transaction => {
+        const transactionElement = document.createElement('div');
+        transactionElement.classList.add('flex', 'justify-between', 'mb-2');
+        transactionElement.innerHTML = `
+          <div>
+            <p class="font-bold text-black">${transaction.description}</p>
+            <p class="text-gray-600 text-sm">ID: ${transaction.id}</p>
+          </div>
+          <div class="text-red-500">
+            -$${Math.abs(transaction.amount).toFixed(2)}
+          </div>
+        `;
+        transactionListElement.appendChild(transactionElement);
+      });
+
+      // Add friend button functionality
+      const addFriendButton = document.getElementById('add-friend-btn');
+      addFriendButton.addEventListener('click', () => {
+        const walletIdInput = document.getElementById('wallet-id');
+        const walletId = walletIdInput.value.trim();
+        if (walletId) {
+          alert(Friend with wallet ID ${walletId} added successfully.);
+          walletIdInput.value = ''; // Clear input field
+        }
+      });
+    });
+  </script>
+</body>
+</html>

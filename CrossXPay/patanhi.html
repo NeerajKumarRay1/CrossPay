@@ -1,0 +1,159 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Crosspay Send</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.1/dist/web3.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&amp;display=swap" rel="stylesheet"/>
+    <script>
+      let web3;
+      let userAccount;
+
+      // Initialize Web3
+      if (typeof window.ethereum !== 'undefined') {
+        web3 = new Web3(window.ethereum);
+        console.log("MetaMask is installed.");
+      } else {
+        alert("Please install MetaMask!");
+      }
+
+      // Request MetaMask account
+      async function connectWallet() {
+        try {
+          const accounts = await web3.eth.requestAccounts();
+          userAccount = accounts[0];
+          console.log("Connected account:", userAccount);
+          updateBalance();  // Update the balance after wallet connection
+        } catch (error) {
+          console.error("MetaMask connection failed:", error);
+        }
+      }
+
+      // Validate Ethereum address
+      function isValidAddress(address) {
+        return web3.utils.isAddress(address);
+      }
+
+      // Send money
+      async function sendMoney(event) {
+        event.preventDefault();
+        const recipient = document.getElementById("recipient-wallet").value;
+        const amount = document.getElementById("amount").value;
+
+        if (!isValidAddress(recipient)) {
+          alert("Invalid wallet address!");
+          return;
+        }
+
+        if (!amount || isNaN(amount) || amount <= 0) {
+          alert("Invalid amount!");
+          return;
+        }
+
+        try {
+          document.getElementById("statusMessage").textContent = "Transaction in progress...";
+          const tx = await web3.eth.sendTransaction({
+            from: userAccount,
+            to: recipient,
+            value: web3.utils.toWei(amount, "ether"),
+          });
+          document.getElementById("statusMessage").textContent = `Transaction successful! Hash: ${tx.transactionHash}`;
+          console.log(tx);
+        } catch (error) {
+          console.error("Transaction failed:", error);
+          document.getElementById("statusMessage").textContent = "Transaction failed. Please try again.";
+        }
+      }
+
+      // Fetch balance
+      async function updateBalance() {
+        if (!userAccount) return;
+        const balanceWei = await web3.eth.getBalance(userAccount);
+        const balanceEth = web3.utils.fromWei(balanceWei, "ether");
+        document.getElementById("balanceDisplay").innerHTML = `Available Balance: <span class="text-green-600">${balanceEth} ETH</span>`;
+      }
+
+      // On page load, connect to wallet
+      window.onload = connectWallet;
+    </script>
+  </head>
+  <body class="font-roboto bg-gray-100 min-h-screen flex flex-col justify-center items-center">
+    <div class="container mx-auto p-4 flex flex-col md:flex-row">
+      <aside class="w-full md:w-1/3 bg-white p-4 rounded-lg shadow-lg mb-4 md:mb-0 md:mr-4">
+        <h3 class="text-xl font-bold text-gray-700 mb-4">
+          Quick Pay
+        </h3>
+        <ul>
+          <li class="mb-2">
+            <button class="w-full text-left p-2 bg-gray-100 rounded hover:bg-gray-200" onclick="setWalletAddress('wallet123')">
+              <img alt="Profile picture of John Doe" class="inline-block rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/JPt3pEzOU7YXHFJ2bj3iubJOrW0OtrXMUQH1PN16AAjOhDeJA.jpg" width="40"/>
+              John Doe
+            </button>
+          </li>
+          <li class="mb-2">
+            <button class="w-full text-left p-2 bg-gray-100 rounded hover:bg-gray-200" onclick="setWalletAddress('wallet456')">
+              <img alt="Profile picture of Jane Smith" class="inline-block rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/nls1Fne5KlX9ekIYidqABwZQxYIA6Vwy0lqKRZP8GGu7EO4TA.jpg" width="40"/>
+              Jane Smith
+            </button>
+          </li>
+          <li class="mb-2">
+            <button class="w-full text-left p-2 bg-gray-100 rounded hover:bg-gray-200" onclick="setWalletAddress('wallet789')">
+              <img alt="Profile picture of Alice Johnson" class="inline-block rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/ipk6E7V7jP6iK1MCAgk0Vv4xakQRW2G5Vbxwhdx9OyGOhDeJA.jpg" width="40"/>
+              Alice Johnson
+            </button>
+          </li>
+          <li class="mb-2">
+            <button class="w-full text-left p-2 bg-gray-100 rounded hover:bg-gray-200" onclick="setWalletAddress('wallet101')">
+              <img alt="Profile picture of Bob Brown" class="inline-block rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/E9rjGMP2s6LgIJ0YHezfTDNSIclIGXGHshfxDrG7pt14JcwnA.jpg" width="40"/>
+              Bob Brown
+            </button>
+          </li>
+          <li class="mb-2">
+            <button class="w-full text-left p-2 bg-gray-100 rounded hover:bg-gray-200" onclick="setWalletAddress('wallet202')">
+              <img alt="Profile picture of Charlie Davis" class="inline-block rounded-full mr-2" height="40" src="https://storage.googleapis.com/a1aa/image/DyqfMFvyeEiN8knUNHz46mgdsnVe5P5JWZO5E0kHQi4uJcwnA.jpg" width="40"/>
+              Charlie Davis
+            </button>
+          </li>
+        </ul>
+      </aside>
+
+      <div class="w-full md:w-2/3 bg-white p-8 rounded-lg shadow-lg">
+        <header class="text-center mb-8">
+          <h1 class="text-4xl font-bold text-blue-600">
+            Crosspay
+          </h1>
+          <h2 class="text-2xl font-bold text-gray-700">
+            Send Money
+          </h2>
+        </header>
+        <form onsubmit="return sendMoney(event)">
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="recipient-wallet">
+              Recipient's Wallet Address
+            </label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="recipient-wallet" placeholder="Enter Wallet Address" type="text"/>
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="amount">
+              Amount (ETH)
+            </label>
+            <div class="flex">
+              <input class="shadow appearance-none border rounded-l w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="amount" placeholder="Enter Amount" step="0.01" type="number"/>
+            </div>
+          </div>
+          <div class="text-center">
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline" type="submit">
+              <i class="fas fa-paper-plane"></i> Send Money
+            </button>
+          </div>
+        </form>
+        <div class="text-center mt-8">
+          <p id="balanceDisplay" class="text-sm font-bold text-gray-700">Available Balance: <span class="text-green-600">-- ETH</span></p>
+        </div>
+        <div id="statusMessage" class="text-center mt-4 text-gray-700"></div>
+      </div>
+    </div>
+  </body>
+</html>
